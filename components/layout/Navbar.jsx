@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [activeLink, setActiveLink] = useState("Home");
+  const router = useRouter();
 
-  const handleLinkClick = (linkName) => {
+  const handleLinkClick = (linkName, path) => {
     setActiveLink(linkName);
+    router.push(path); 
   };
 
   return (
@@ -23,23 +26,23 @@ const Navbar = () => {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex items-center gap-2 px-2 justify-between">
+        <div className="flex items-center gap-1 px-2 justify-between">
           <button
-            onClick={() => handleLinkClick("Home")}
+            onClick={() => handleLinkClick("Home", "/")}
             className={`px-4 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeLink === "Home"
                 ? "w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 rounded-md text-sm transition-colors duration-200 flex items-center justify-center space-x-2 border-t-2 border-l-2 border-blue-400 border-r border-b border-r-blue-800/60 border-b-blue-800/60 shadow-lg hover:shadow-xl relative"
-                : "text-white "
+                : "text-white border-t-2 border-l-2 border-r border-b border-white/0"
             }`}
           >
             Home
           </button>
           <button
-            onClick={() => handleLinkClick("About")}
+            onClick={() => handleLinkClick("About", "/about")}
             className={`px-4 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeLink === "About"
                 ? "w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 rounded-md text-sm transition-colors duration-200 flex items-center justify-center space-x-2 border-t-2 border-l-2 border-blue-400 border-r border-b border-r-blue-800/60 border-b-blue-800/60 shadow-lg hover:shadow-xl relative"
-                : "text-white "
+                : "text-white border-t-2 border-l-2 border-r border-b border-white/0"
             }`}
           >
             About
