@@ -1,14 +1,17 @@
-import React from 'react'
-import Map from '@/components/home/Map'
-import Navbar from '@/components/layout/Navbar'
+"use client";
 
-const Home = () => {
+import Navbar from '@/components/layout/Navbar'
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import("@/components/home/Map"), {
+  ssr: false, // disables server-side rendering
+});
+
+export default function HomePage() {
   return (
     <div>
-        <Navbar/>
-        <Map/>
+       <Navbar/>
+      <Map />
     </div>
-  )
+  );
 }
-
-export default Home
