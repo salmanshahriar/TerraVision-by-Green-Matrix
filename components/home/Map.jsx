@@ -141,11 +141,11 @@ const LocationSearch = ({ onLocationFound }) => {
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-[100]">
+    <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10">
       <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
       <div className="relative z-10">
         <h3 className="font-bold text-gray-900 mb-4 text-base">Location Search</h3>
-        <div className="relative z-[101]">
+        <div className="relative z-20">
           <input
             type="text"
             value={searchQuery}
@@ -176,7 +176,7 @@ const LocationSearch = ({ onLocationFound }) => {
             )}
           </button>
          {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 bg-white/98 backdrop-blur-md border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-xl shadow-2xl max-h-64 overflow-y-auto mt-2 z-[9999]">
+            <div className="absolute top-full left-0 right-0 bg-white/98 backdrop-blur-md border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-xl shadow-2xl max-h-64 overflow-y-auto mt-2 z-50">
               <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
               {suggestions.map((suggestion, index) => (
                 <button
