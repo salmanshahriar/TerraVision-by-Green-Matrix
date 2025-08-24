@@ -141,8 +141,8 @@ const LocationSearch = ({ onLocationFound }) => {
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10">
-      <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
+    <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-lg p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10">
+      <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
       <div className="relative z-10">
         <h3 className="font-bold text-gray-900 mb-4 text-base">Location Search</h3>
         <div className="relative z-20">
@@ -395,8 +395,8 @@ const LayersControl = ({ mapType, setMapType }) => {
 };
 
 const DateRangeSelector = ({ dateRange, setDateRange }) => (
-  <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative Z-10">
-    <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
+  <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-lg p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative Z-10">
+    <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
     <div className="relative z-10">
       <h3 className="font-bold text-gray-900 mb-4 text-base">Date Range</h3>
       <div className="space-y-4">

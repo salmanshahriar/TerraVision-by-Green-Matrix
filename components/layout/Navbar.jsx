@@ -18,15 +18,19 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-6 py-1 mx-auto">
         {/* Logo */}
         <div className="flex items-center">
-          <div className="w-6 h-6 bg-blue-600 rounded-lg border border-white/10 flex items-center justify-center mr-2 shadow-lg">
-            <div className="w-2 h-2 bg-white rounded-full opacity-90"></div>
+          <div className="w-6 h-6 bg-blue-600 rounded-lg border-blue-400/20 border-2 flex items-center justify-center mr-2 shadow-lg">
+            <div className="w-4 h-4 ">
+               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
           <h2
             className={`font-bold text-lg bg-clip-text text-transparent ${
               pathname === "/about" ? "bg-black" : "bg-white"
             }`}
           >
-            EarthPulse
+            TerraVision
           </h2>
         </div>
 
