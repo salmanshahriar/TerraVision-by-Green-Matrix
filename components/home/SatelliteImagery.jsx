@@ -78,7 +78,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
 
   const handleCompareData = () => {
     setCurrentStep('analyzing');
-    setLoadingText('Analyzing satellite data with AI...');
+    setLoadingText('Analyzing satellite images with machine learning...');
     
     setTimeout(() => {
       setCurrentStep('results');
@@ -89,7 +89,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
     setOpen(false);
     setTimeout(() => {
       setCurrentStep('loading');
-      setLoadingText('Finding satellite images...');
+      setLoadingText('Finding Sentinel-2 satellite images from Earth Engine...');
     }, 300);
   };
 
@@ -137,11 +137,9 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
     URL.revokeObjectURL(url);
   };
 
-  // Download PDF function
   const downloadPDF = () => {
     const dates = getFormattedDates();
     
-    // Create PDF content with professional report design
     const generatePDF = () => {
       const printWindow = window.open('', '_blank');
       printWindow.document.write(`
@@ -541,7 +539,6 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
     generatePDF();
   };
 
-  // Format date from YYYY-MM-DD to MM/DD/YYYY
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -552,7 +549,6 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
     });
   };
 
-  // Get formatted dates from props or use defaults
   const getFormattedDates = () => {
     if (dateRange && dateRange.from && dateRange.to) {
       return {
@@ -560,7 +556,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
         to: formatDate(dateRange.to)
       };
     }
-    // Fallback to default dates if no dateRange provided
+
     const today = new Date();
     const pastDate = new Date();
     pastDate.setFullYear(today.getFullYear() - 4);
@@ -572,7 +568,6 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
 
   const dates = getFormattedDates();
 
-  // Get year from date string for dynamic labeling
   const getYearFromDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
