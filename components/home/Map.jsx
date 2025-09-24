@@ -2,18 +2,19 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { Plus, Minus, Locate, Navigation, Layers, Map, LassoSelect} from 'lucide-react';
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
 import "leaflet-draw";
 import SatelliteImagery from "./SatelliteImagery";
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
-
 
 const DrawControl = ({ setOpen, setDrawnLayer, onDrawControlReady }) => {
   const map = useMap();
@@ -141,10 +142,10 @@ const LocationSearch = ({ onLocationFound }) => {
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-lg p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10">
-      <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+    <div className="bg-white shadow-xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-20 transition-all duration-200 hover:shadow-2xl hover:scale-[1.02]">
+      <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
       <div className="relative z-10">
-        <h3 className="font-bold text-gray-900 mb-4 text-base">Location Search</h3>
+        <label className="block text-sm font-semibold text-black mb-2">Search Area:</label>
         <div className="relative z-20">
           <input
             type="text"
@@ -156,14 +157,16 @@ const LocationSearch = ({ onLocationFound }) => {
             }}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            placeholder="Search for a place..."
-            className="w-full border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 pr-12 bg-white/70 backdrop-blur-sm transition-all duration-200 shadow-inner"
+            placeholder="Search for a place"
+            className="w-full placeholder-black border border-black/30 shadow-xs rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 bg-white/50 backdrop-blur-sm transition-all duration-200"
+            aria-label="Search for a location"
           />
           <button
             onClick={searchLocation}
             disabled={isSearching || !searchQuery.trim()}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black/80 transition-colors duration-200"
-            title="Search"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black transition-colors duration-200 disabled:opacity-50"
+            title="Search location"
+            aria-label="Search location"
           >
             {isSearching ? (
               <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,17 +178,18 @@ const LocationSearch = ({ onLocationFound }) => {
               </svg>
             )}
           </button>
-         {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 bg-white/98 backdrop-blur-md border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-xl shadow-2xl max-h-64 overflow-y-auto mt-2 z-50">
-              <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 bg-white/90 backdrop-blur-sm border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-lg shadow-xl max-h-64 overflow-y-auto mt-1.5 z-50 transition-all duration-200">
+              <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => selectLocation(suggestion)}
-                  className="relative w-full text-left px-4 py-3 hover:bg-blue-50/80 text-sm border-b border-gray-100/50 last:border-b-0 focus:outline-none focus:bg-blue-50/80 transition-all duration-150 first:rounded-t-xl last:rounded-b-xl"
+                  className="relative w-full text-left px-4 py-2.5 hover:bg-blue-50/80 text-sm border-b border-gray-100/50 last:border-b-0 focus:outline-none focus:bg-blue-50/80 transition-all duration-150 rounded-lg"
+                  aria-label={`Select ${suggestion.place_name}`}
                 >
-                  <div className="font-semibold text-gray-900 truncate">{suggestion.place_name}</div>
-                  <div className="text-xs text-gray-600 truncate mt-1">{suggestion.display_name}</div>
+                  <div className="font-medium text-gray-800 truncate">{suggestion.place_name}</div>
+                  <div className="text-xs text-gray-500 truncate mt-0.5">{suggestion.display_name}</div>
                 </button>
               ))}
             </div>
@@ -238,42 +242,78 @@ const ZoomControls = ({ onLocationFound, mapType, setMapType }) => {
   };
 
   return (
-    <div className="absolute top-6 right-8 z-[1000] flex flex-col space-y-3 pt-10  ">
-      <div className="flex flex-col space-y-2 w-14 justify-end">
-        <button
-          onClick={handleZoomIn}
-          className="bg-white/95 backdrop-blur-md shadow-2xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 hover:bg-white hover:shadow-3xl transition-all duration-300 group relative"
-          title="Zoom In"
-        >
-          <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-          <svg className="w-4 h-4 text-gray-700 group-hover:text-blue-600 transition-colors duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-        </button>
-        <button
-          onClick={handleZoomOut}
-          className="bg-white/95 backdrop-blur-md shadow-2xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 hover:bg-white hover:shadow-3xl transition-all duration-300 group relative"
-          title="Zoom Out"
-        >
-          <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-          <svg className="w-4 h-4 text-gray-700 group-hover:text-blue-600 transition-colors duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
-          </svg>
-        </button>
+    <div className="absolute top-6 right-6 z-[1000] flex flex-col space-y-2 pt-10">
+      <div className="bg-white shadow-lg rounded-lg border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative">
+        <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+        <div className="relative z-10 p-3">
+          <h3 className="text-sm font-semibold text-black mb-2">Map Layers:</h3>
+          <div className="space-y-0.5">
+            {[
+              { 
+                value: "satellite", 
+                label: "Satellite", 
+                icon: <Layers className="w-3.5 h-3.5" />
+              },
+              { 
+                value: "satellite+names+roads", 
+                label: "Terrain", 
+                icon: <Map className="w-3.5 h-3.5" />
+              },
+              { 
+                value: "roads", 
+                label: "Street", 
+                icon: <Navigation className="w-3.5 h-3.5" />
+              }
+            ].map((type) => (
+              <button
+                key={type.value}
+                onClick={() => setMapType(type.value)}
+                className={`w-full flex items-center space-x-2 p-2 rounded-md transition-all duration-200 text-left ${
+                  mapType === type.value 
+                    ? "bg-black text-white" 
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <div className={`${mapType === type.value ? "text-white" : "text-gray-500"}`}>
+                    {type.icon}
+                  </div>
+                  <span className="font-medium text-xs">{type.label}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <button
-        onClick={locateMe}
-        disabled={isLocating}
-        className="bg-white/95 backdrop-blur-md shadow-2xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 hover:bg-white hover:shadow-3xl transition-all duration-300 group disabled:opacity-60 relative w-14 h-14"
-        title="Locate Me"
-      >
-        <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-        <svg className="w-4 h-4 text-gray-700 group-hover:text-blue-600 transition-colors duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </button>
-      <LayersControl mapType={mapType} setMapType={setMapType} />
+      <div className="bg-white shadow-lg rounded-lg border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative">
+        <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+        <div className="relative z-10 p-2">
+          <div className="flex space-x-0.5">
+            <button
+              onClick={handleZoomIn}
+              className="flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200"
+              title="Zoom In"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleZoomOut}
+              className="flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200"
+              title="Zoom Out"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            <button
+              onClick={locateMe}
+              disabled={isLocating}
+              className="flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200 disabled:opacity-60"
+              title="Locate Me"
+            >
+              <Locate className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -281,18 +321,18 @@ const ZoomControls = ({ onLocationFound, mapType, setMapType }) => {
 const LayersControl = ({ mapType, setMapType }) => {
   const [showLayers, setShowLayers] = useState(false);
   const mapTypes = [
-     { 
+    { 
       value: "satellite+names+roads", 
       label: "Hybrid", 
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/>
-    <path d="M9 3v18"/>
-    <path d="M15 3v18"/>
-    <circle cx="6" cy="12" r="1"/>
-    <circle cx="12" cy="9" r="1"/>
-    <circle cx="18" cy="15" r="1"/>
-    <path d="M18 6a6 6 0 0 0-12 0"/>
+          <path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/>
+          <path d="M9 3v18"/>
+          <path d="M15 3v18"/>
+          <circle cx="6" cy="12" r="1"/>
+          <circle cx="12" cy="9" r="1"/>
+          <circle cx="18" cy="15" r="1"/>
+          <path d="M18 6a6 6 0 0 0-12 0"/>
         </svg>
       ),
       description: "Satellite with labels"
@@ -323,7 +363,7 @@ const LayersControl = ({ mapType, setMapType }) => {
     <div className="relative">
       <button
         onClick={() => setShowLayers(!showLayers)}
-        className={`bg-white/95 backdrop-blur-md shadow-2xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 hover:bg-white hover:shadow-3xl transition-all duration-300 group relative ${showLayers ? 'bg-blue-50/90 border-t-blue-200 border-l-blue-200' : ''}`}
+        className={`bg-white shadow-2xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 hover:bg-white hover:shadow-3xl transition-all duration-300 group relative ${showLayers ? 'bg-blue-50/90 border-t-blue-200 border-l-blue-200' : ''}`}
         title="Map Layers"
       >
         <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
@@ -335,7 +375,7 @@ const LayersControl = ({ mapType, setMapType }) => {
       </button>
       
       {showLayers && (
-        <div className="absolute top-0 right-full bg-white/98 backdrop-blur-xl shadow-2xl rounded-2xl border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 overflow-hidden min-w-[300px] z-[2000] mr-4 animate-in slide-in-from-right-2 duration-200">
+        <div className="absolute top-0 right-full bg-white shadow-2xl rounded-2xl border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 overflow-hidden min-w-[300px] z-[2000] mr-4 animate-in slide-in-from-right-2 duration-200">
           <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
           <div className="p-3 relative z-10">
             <div className="flex items-center justify-between px-3 py-3 border-b-2 border-gray-100/80 mb-2">
@@ -386,7 +426,6 @@ const LayersControl = ({ mapType, setMapType }) => {
                 </button>
               ))}
             </div>
-           
           </div>
         </div>
       )}
@@ -395,27 +434,29 @@ const LayersControl = ({ mapType, setMapType }) => {
 };
 
 const DateRangeSelector = ({ dateRange, setDateRange }) => (
-  <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-lg p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative Z-10">
-    <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+  <div className="bg-white shadow-xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10 transition-all duration-200 hover:shadow-2xl hover:scale-[1.02]">
+    <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
     <div className="relative z-10">
-      <h3 className="font-bold text-gray-900 mb-4 text-base">Date Range</h3>
-      <div className="space-y-4">
+      <h3 className="text-sm font-semibold text-black mb-3">Date Range:</h3>
+      <div className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Date From</label>
+          <label className="block text-xs font-medium text-black mb-1">From</label>
           <input
             type="date"
             value={dateRange.from}
             onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
-            className="w-full border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 bg-white/70 backdrop-blur-sm transition-all duration-200 shadow-inner"
+            className="w-full border border-black/30 shadow-xs rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 bg-white/50 backdrop-blur-sm transition-all duration-200 "
+            aria-label="Select start date"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Date To</label>
+          <label className="block text-xs font-medium text-black mb-1">To</label>
           <input
             type="date"
             value={dateRange.to}
             onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
-            className="w-full border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 bg-white/70 backdrop-blur-sm transition-all duration-200 shadow-inner"
+            className="w-full border  border-black/30 shadow-xs rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 bg-white/50 backdrop-blur-sm transition-all duration-200"
+            aria-label="Select end date"
           />
         </div>
       </div>
@@ -424,23 +465,29 @@ const DateRangeSelector = ({ dateRange, setDateRange }) => (
 );
 
 const AreaSelector = ({ startDrawing, clearDrawings }) => (
-  <div className="bg-white/90 backdrop-blur-sm shadow-2xl rounded-lg p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative">
-    <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+  <div className="bg-white shadow-xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10 transition-all duration-200 hover:shadow-2xl hover:scale-[1.02]">
+    <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
     <div className="relative z-10">
-      <h3 className="font-bold text-gray-800 mb-3 text-base">Area Selection</h3>
+      <h3 className="text-sm font-semibold text-black mb-3">Area Selection:</h3>
       <div className="space-y-2">
         <button
           onClick={startDrawing}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors duration-200 flex items-center justify-center space-x-2 border-t-2 border-l-2 border-blue-400 border-r border-b border-r-blue-800/60 border-b-blue-800/60 shadow-lg hover:shadow-xl relative"
+          className="w-full bg-black text-white font-medium py-2 px-4 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2 relative group"
+          aria-label="Start drawing area"
         >
-          <div className="absolute inset-0 rounded-md shadow-inner pointer-events-none"></div>
+          <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+          <LassoSelect className="w-3.5 h-3.5" />
           <span className="relative z-10">Select Area</span>
         </button>
         <button
           onClick={clearDrawings}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors duration-200 flex items-center justify-center space-x-2 border-t-2 border-l-2 border-red-400 border-r border-b border-r-red-800/60 border-b-red-800/60 shadow-lg hover:shadow-xl relative"
+          className="w-full bg-red-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2 relative group"
+          aria-label="Clear drawn area"
         >
-          <div className="absolute inset-0 rounded-md shadow-inner pointer-events-none"></div>
+          <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
           <span className="relative z-10">Clear</span>
         </button>
       </div>

@@ -36,9 +36,10 @@ const PDFViewerPage = () => {
                 Life on Land. We ensure environmental warnings are never overlooked again.
               </p>
               
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-blue-400 p-4 mt-6">
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
                 <p className="text-xs text-blue-700 italic font-medium">
-                  "Terra Vision: Because if we don't monitor Earth's pulse today... There may not be one tomorrow."
+                  "Terra Vision: Because if we don't monitor Earth's pulse today,<br/>
+                  There may not be one tomorrow."
                 </p>
                 <p className='text-sm text-blue-700 italic font-medium text-end mt-5'>- Team Terra Vision</p>
               </div>
