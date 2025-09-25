@@ -1,4 +1,3 @@
-
 export const downloadJSONData = ({ dates, startYear, endYear, timelineData, coverageStartData, coverageEndData, classData, changeSummary }) => {
   const analysisData = {
     metadata: {
@@ -50,7 +49,6 @@ export const downloadJSONData = ({ dates, startYear, endYear, timelineData, cove
     strategicRecommendations: [
       { priority: "HIGH", action: "Emergency logging moratorium in critical zones", timeline: "Immediate", expectedImpact: "Prevent 5% additional loss" },
       { priority: "HIGH", action: "Establish 50km² protected buffer zones", timeline: "3 months", expectedImpact: "Protect remaining core habitat" },
-      { priority: "MEDIUM", action: "Deploy satellite monitoring system", timeline: "6 months", expectedImpact: "Real-time deforestation alerts" },
       { priority: "MEDIUM", action: "Implement sustainable agriculture programs", timeline: "12 months", expectedImpact: "Reduce expansion pressure" },
       { priority: "LOW", action: "Community-based reforestation initiative", timeline: "24 months", expectedImpact: "Restore 10% degraded areas" }
     ]
@@ -68,7 +66,7 @@ export const downloadJSONData = ({ dates, startYear, endYear, timelineData, cove
   URL.revokeObjectURL(url);
 };
 
-export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSummary }) => {
+export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSummary, coverageStartData, coverageEndData }) => {
   const generatePDF = () => {
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -192,6 +190,31 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
           .data-table td {
             font-size: 9px;
           }
+          .coverage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6px 0;
+            font-size: 9px;
+            background: #fff;
+          }
+          .coverage-table th, .coverage-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+          }
+          .coverage-table th {
+            background: #e5e5e5;
+            font-weight: bold;
+            font-size: 9px;
+            text-transform: uppercase;
+          }
+          .coverage-table td {
+            font-size: 9px;
+          }
+          .coverage-table .land-type {
+            text-align: left;
+            font-weight: bold;
+          }
           .impact-table {
             width: 100%;
             border-collapse: collapse;
@@ -238,6 +261,9 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
           .mb-medium { margin-bottom: 8px; }
           .change-negative { font-weight: bold; color: #b91c1c; }
           .change-positive { font-weight: bold; color: #15803d; }
+          .forest-color { color: #10b981; font-weight: bold; }
+          .barren-color { color: #f97316; font-weight: bold; }
+          .urban-color { color: #ef4444; font-weight: bold; }
         </style>
       </head>
       <body>
@@ -248,6 +274,7 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
             <div class="report-subtitle">Analysis Period: ${dates.from} to ${dates.to}</div>
             <div class="report-meta">Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | Satellite Remote Sensing Analysis</div>
           </div>
+          
           <div class="metrics-row">
             <div class="metric-item">
               <div class="metric-value">${changeSummary.find(row => row.metric === 'Forest Coverage')?.change || '-22.6%'}</div>
@@ -262,12 +289,14 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
               <div class="metric-label">Study Period</div>
             </div>
           </div>
+          
           <div class="section">
             <div class="section-title">Executive Summary</div>
             <div class="summary-text">
               Comprehensive satellite imagery analysis reveals critical deforestation in Chittagong region with ${changeSummary.find(row => row.metric === 'Forest Coverage')?.change || '22.6%'} forest coverage decline over ${parseInt(endYear) - parseInt(startYear)} years. Primary drivers include agricultural expansion (62%), urbanization (23%), and illegal logging (15%). NDVI index decreased from ${changeSummary.find(row => row.metric === 'NDVI Average')?.[`value${startYear}`] || '0.65'} to ${changeSummary.find(row => row.metric === 'NDVI Average')?.[`value${endYear}`] || '0.5'}, indicating severe vegetation health deterioration. Immediate intervention required to prevent irreversible environmental degradation affecting biodiversity, soil stability, and climate resilience.
             </div>
           </div>
+          
           <div class="section">
             <div class="section-title">Change Detection Summary</div>
             <table class="data-table">
@@ -295,27 +324,49 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
               </tbody>
             </table>
           </div>
+          
           <div class="section">
             <div class="section-title">Land Coverage Analysis</div>
-            <div class="two-column">
-              <div class="column">
-                <div class="column-title">Baseline (${dates.from})</div>
-                <table class="column-table">
-                  <tr><td>Forest Coverage</td><td>${changeSummary.find(row => row.metric === 'Forest Coverage')?.[`value${startYear}`] || '31.0%'}</td></tr>
-                  <tr><td>Barren Land</td><td>${changeSummary.find(row => row.metric === 'Barren Land')?.[`value${startYear}`] || '21.0%'}</td></tr>
-                  <tr><td>Urban Areas</td><td>${changeSummary.find(row => row.metric === 'Urban Coverage')?.[`value${startYear}`] || '30.0%'}</td></tr>
-                </table>
-              </div>
-              <div class="column">
-                <div class="column-title">Current (${dates.to})</div>
-                <table class="column-table">
-                  <tr><td>Forest Coverage</td><td>${changeSummary.find(row => row.metric === 'Forest Coverage')?.[`value${endYear}`] || '24.0%'} (${changeSummary.find(row => row.metric === 'Forest Coverage')?.change || '-7.0%'})</td></tr>
-                  <tr><td>Barren Land</td><td>${changeSummary.find(row => row.metric === 'Barren Land')?.[`value${endYear}`] || '25.0%'} (${changeSummary.find(row => row.metric === 'Barren Land')?.change || '+4.0%'})</td></tr>
-                  <tr><td>Urban Areas</td><td>${changeSummary.find(row => row.metric === 'Urban Coverage')?.[`value${endYear}`] || '35.0%'} (${changeSummary.find(row => row.metric === 'Urban Coverage')?.change || '+5.0%'})</td></tr>
-                </table>
-              </div>
-            </div>
+            <table class="coverage-table">
+              <thead>
+                <tr>
+                  <th>Land Cover Type</th>
+                  <th>Baseline (${dates.from})</th>
+                  <th>Current (${dates.to})</th>
+                  <th>Absolute Change</th>
+                  <th>Percentage Change</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="land-type forest-color">Forest Coverage</td>
+                  <td>${coverageStartData?.find(item => item.name === 'Forest')?.value || '31'}%</td>
+                  <td>${coverageEndData?.find(item => item.name === 'Forest')?.value || '24'}%</td>
+                  <td class="change-negative">-${(coverageStartData?.find(item => item.name === 'Forest')?.value || 31) - (coverageEndData?.find(item => item.name === 'Forest')?.value || 24)}%</td>
+                  <td class="change-negative">${changeSummary.find(row => row.metric === 'Forest Coverage')?.change || '-22.6%'}</td>
+                  <td class="change-negative">Declining ↓</td>
+                </tr>
+                <tr>
+                  <td class="land-type barren-color">Barren Land</td>
+                  <td>${coverageStartData?.find(item => item.name === 'Barren')?.value || '21'}%</td>
+                  <td>${coverageEndData?.find(item => item.name === 'Barren')?.value || '25'}%</td>
+                  <td class="change-positive">+${(coverageEndData?.find(item => item.name === 'Barren')?.value || 25) - (coverageStartData?.find(item => item.name === 'Barren')?.value || 21)}%</td>
+                  <td class="change-positive">${changeSummary.find(row => row.metric === 'Barren Land')?.change || '+19.0%'}</td>
+                  <td class="change-positive">Increasing ↑</td>
+                </tr>
+                <tr>
+                  <td class="land-type urban-color">Urban Areas</td>
+                  <td>${coverageStartData?.find(item => item.name === 'Urban')?.value || '30'}%</td>
+                  <td>${coverageEndData?.find(item => item.name === 'Urban')?.value || '35'}%</td>
+                  <td class="change-positive">+${(coverageEndData?.find(item => item.name === 'Urban')?.value || 35) - (coverageStartData?.find(item => item.name === 'Urban')?.value || 30)}%</td>
+                  <td class="change-positive">${changeSummary.find(row => row.metric === 'Urban Coverage')?.change || '+16.7%'}</td>
+                  <td class="change-positive">Expanding ↑</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+          
           <div class="section">
             <div class="section-title">Annual Trend Analysis</div>
             <table class="data-table">
@@ -348,6 +399,7 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
               </tbody>
             </table>
           </div>
+          
           <div class="section">
             <div class="section-title">Environmental Impact Assessment</div>
             <table class="impact-table">
@@ -381,12 +433,14 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
               </tbody>
             </table>
           </div>
+          
           <div class="section">
             <div class="section-title">Methodology & Data Quality</div>
             <div class="summary-text">
               <strong>Data Sources:</strong> Landsat 8/9 and Sentinel-2 satellite missions with 30m spatial resolution. <strong>Processing:</strong> Google Earth Engine cloud computing platform with supervised machine learning classification. <strong>Validation:</strong> Ground-truthing through field surveys in 25 representative locations. <strong>Accuracy:</strong> Overall classification accuracy of 94.2% with kappa coefficient of 0.91. <strong>Temporal Coverage:</strong> Annual composite imagery from ${startYear}-${endYear} with cloud coverage <10%.
             </div>
           </div>
+          
           <div class="section">
             <div class="section-title">Strategic Recommendations</div>
             <table class="data-table">

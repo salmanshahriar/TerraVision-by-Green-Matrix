@@ -1,8 +1,41 @@
-
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { Download, FileText } from 'lucide-react';
 import { downloadJSONData, downloadPDF } from './DownloadUtils';
+
+// Custom label component for percentage values
+const PercentageLabel = (props) => {
+  const { x, y, width, height, value } = props;
+  return (
+    <text 
+      x={x + width / 2} 
+      y={y - 5} 
+      fill="#374151" 
+      textAnchor="middle" 
+      fontSize={10} 
+      fontWeight="600"
+    >
+      {`${value}%`}
+    </text>
+  );
+};
+
+// Custom label component for sample counts
+const SampleCountLabel = (props) => {
+  const { x, y, width, height, value } = props;
+  return (
+    <text 
+      x={x + width / 2} 
+      y={y - 5} 
+      fill="#374151" 
+      textAnchor="middle" 
+      fontSize={9} 
+      fontWeight="600"
+    >
+      {value}
+    </text>
+  );
+};
 
 const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStartData, coverageEndData, classData, changeSummary }) => {
   return (
@@ -22,7 +55,7 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
                 <span className="relative z-10">JSON</span>
               </button>
               <button
-                onClick={() => downloadPDF({ dates, startYear, endYear, timelineData, changeSummary })}
+                onClick={() => downloadPDF({ dates, startYear, endYear, timelineData, changeSummary, coverageStartData, coverageEndData })}
                 className="bg-red-500 text-white font-medium py-1 px-2 rounded-lg text-xs shadow-md flex items-center justify-center space-x-1 relative"
               >
                 <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
@@ -42,7 +75,7 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
         <div className="relative z-10">
           <h3 className="text-sm font-semibold text-black mb-2">Change Detection Summary</h3>
           {changeSummary && changeSummary.length > 0 ? (
-            <table className="w-full text-xs border-collapse">
+            <table className="w-full text-xs border-collapse bg-white rounded-lg overflow-hidden shadow-md">
               <thead>
                 <tr className="bg-gray-100">
                   <th className="p-1.5 text-left font-semibold">Metric</th>
@@ -78,14 +111,15 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
             <div className="flex items-center gap-2 mb-2">
               <h3 className="text-xs font-semibold text-black">{startYear} - Land Coverage</h3>
             </div>
-            <div className="h-32">
+            <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={coverageStartData}>
+                <BarChart data={coverageStartData} margin={{ top: 20, right: 5, left: 5, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip formatter={(value) => `${value}%`} />
                   <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                    <LabelList content={PercentageLabel} />
                     {coverageStartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -105,14 +139,15 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
             <div className="flex items-center gap-2 mb-2">
               <h3 className="text-xs font-semibold text-black">{endYear} - Land Coverage</h3>
             </div>
-            <div className="h-32">
+            <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={coverageEndData}>
+                <BarChart data={coverageEndData} margin={{ top: 20, right: 5, left: 5, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
                   <Tooltip formatter={(value) => `${value}%`} />
                   <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                    <LabelList content={PercentageLabel} />
                     {coverageEndData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -126,15 +161,15 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
           </div>
         </div>
 
-        {/* Timeline Chart */}
+        {/* Timeline Chart with Data Labels */}
         <div className="bg-white p-3 rounded-xl shadow-sm border">
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <h3 className="text-xs font-semibold text-black">{`${parseInt(endYear) - parseInt(startYear)}-Year Trend`}</h3>
             </div>
-            <div className="h-32">
+            <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={timelineData}>
+                <LineChart data={timelineData} margin={{ top: 15, right: 5, left: 5, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="year" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} />
@@ -146,7 +181,14 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
                     strokeWidth={2}
                     dot={{ fill: '#10b981', strokeWidth: 1, r: 3 }}
                     name="Forest"
-                  />
+                  >
+                    <LabelList 
+                      dataKey="forest" 
+                      position="top" 
+                      style={{ fontSize: '9px', fill: '#10b981', fontWeight: '600' }} 
+                      formatter={(value) => `${value}%`}
+                    />
+                  </Line>
                   <Line 
                     type="monotone" 
                     dataKey="barren" 
@@ -154,7 +196,14 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
                     strokeWidth={2}
                     dot={{ fill: '#f97316', strokeWidth: 1, r: 2 }}
                     name="Barren"
-                  />
+                  >
+                    <LabelList 
+                      dataKey="barren" 
+                      position="bottom" 
+                      style={{ fontSize: '9px', fill: '#f97316', fontWeight: '600' }} 
+                      formatter={(value) => `${value}%`}
+                    />
+                  </Line>
                   <Line 
                     type="monotone" 
                     dataKey="urban" 
@@ -162,7 +211,14 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
                     strokeWidth={2}
                     dot={{ fill: '#ef4444', strokeWidth: 1, r: 2 }}
                     name="Urban"
-                  />
+                  >
+                    <LabelList 
+                      dataKey="urban" 
+                      position="topRight" 
+                      style={{ fontSize: '9px', fill: '#ef4444', fontWeight: '600' }} 
+                      formatter={(value) => `${value}%`}
+                    />
+                  </Line>
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -172,25 +228,40 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
           </div>
         </div>
 
-        {/* Class Distribution Bar Chart */}
+        {/* Class Distribution Bar Chart with Sample Counts */}
         <div className="bg-white p-3 rounded-xl shadow-sm border">
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-xs font-semibold text-black">Class Distribution (Sample Counts)</h3>
+              <h3 className="text-xs font-semibold text-black">Land Use Classification (Sample Counts)</h3>
             </div>
-            <div className="h-32">
+            <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={classData} layout="vertical">
+                <BarChart data={classData} margin={{ top: 20, right: 5, left: 5, bottom: 35 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis type="number" tick={{ fontSize: 10 }} />
-                  <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} />
-                  <Tooltip formatter={(value) => `${value} samples`} />
-                  <Bar dataKey="value" fill="#8884d8" radius={[0, 2, 2, 0]} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 9 }} 
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    interval={0}
+                  />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip 
+                    formatter={(value, name) => [`${value} samples`, 'Sample Count']}
+                    labelFormatter={(label) => `Class: ${label}`}
+                  />
+                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
+                    <LabelList content={SampleCountLabel} />
+                    {classData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-gray-500 mt-1 text-center">
-              Distribution of satellite image samples by class
+              Satellite image samples classified by land use type
             </p>
           </div>
         </div>
@@ -247,7 +318,7 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
       <div className="bg-white p-3 rounded-xl shadow-sm border">
         <div className="relative z-10">
           <h3 className="text-sm font-semibold text-black mb-2">Strategic Recommendations</h3>
-          <table className="w-full text-xs border-collapse">
+          <table className="w-full text-xs border-collapse bg-white rounded-lg overflow-hidden shadow-md">
             <thead>
               <tr className="bg-gray-100">
                 <th className="p-1.5 text-left font-semibold">Priority</th>
@@ -268,12 +339,6 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
                 <td className="p-1.5 border-t">Establish 50km² protected buffer zones</td>
                 <td className="p-1.5 border-t">3 months</td>
                 <td className="p-1.5 border-t">Protect remaining core habitat</td>
-              </tr>
-              <tr className="bg-white">
-                <td className="p-1.5 border-t font-bold">MEDIUM</td>
-                <td className="p-1.5 border-t">Deploy satellite monitoring system</td>
-                <td className="p-1.5 border-t">6 months</td>
-                <td className="p-1.5 border-t">Real-time deforestation alerts</td>
               </tr>
               <tr className="bg-gray-50">
                 <td className="p-1.5 border-t font-bold">MEDIUM</td>
