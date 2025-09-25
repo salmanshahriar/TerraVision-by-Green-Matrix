@@ -10,6 +10,27 @@ import {
 import ResultsSection from "./ResultSection";
 import { downloadJSONData, downloadPDF } from "./DownloadUtils";
 
+const colorMap = {
+  emerald: {
+    dot: "bg-emerald-500",
+    badgeBg: "bg-emerald-100",
+    badgeText: "text-emerald-800",
+    statsBg: "bg-emerald-50",
+    statsBorder: "border-emerald-200",
+    statsText: "text-emerald-700",
+    statsValue: "text-emerald-800",
+  },
+  amber: {
+    dot: "bg-amber-500",
+    badgeBg: "bg-amber-100",
+    badgeText: "text-amber-800",
+    statsBg: "bg-amber-50",
+    statsBorder: "border-amber-200",
+    statsText: "text-amber-700",
+    statsValue: "text-amber-800",
+  },
+};
+
 const SatelliteImagery = ({ open, setOpen, dateRange }) => {
   const [currentStep, setCurrentStep] = useState("loading");
   const [loadingText, setLoadingText] = useState(
@@ -247,8 +268,8 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
 
           {currentStep === "images" && (
             <div className="space-y-6">
-              {/* Data Source & Processing (3 rows) */}
-   <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-3 rounded-lg border border-blue-200 shadow-sm">
+              {/* Data Source & Processing */}
+              <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-3 rounded-lg border border-blue-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   <h3 className="text-xs font-bold text-slate-800">
@@ -275,60 +296,87 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
                   <span className="text-slate-600">Gamma:</span>
                   <span className="text-slate-800 font-mono">1.4</span>
                   <span className="text-slate-600">Clouds:</span>
-                  <span className="text-green-600 font-medium">&lt;10%</span>
+                  <span className="text-green-600 font-medium">10%</span>
                 </div>
               </div>
 
               {/* T1 & T2 sections */}
               <div className="grid lg:grid-cols-2 gap-6">
-                {[{ title: "Baseline Period", color: "emerald", images: section1Images, date: dates.from, stats: { acq: 12, cloud: "5.2%", pixels: "98.4%", window: "±15d" } },
-                  { title: "Comparison Period", color: "amber", images: section2Images, date: dates.to, stats: { acq: 12, cloud: "7.8%", pixels: "96.7%", window: "±15d" } }
-                ].map((period, i) => (
-                  <div key={i} className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 bg-${period.color}-500 rounded-full`}></div>
-                        <div>
-                          <h3 className="text-sm font-bold text-slate-800">{period.title}</h3>
-                          <p className="text-xs text-slate-600">{period.date} • Sentinel-2 MSI</p>
-                        </div>
-                      </div>
-                      <div className={`bg-${period.color}-100 text-${period.color}-800 px-2 py-0.5 rounded-full text-xs font-medium`}>
-                        {i === 0 ? "T1" : "T2"}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-2 mb-3">
-                      {period.images.map((src, idx) => (
-                        <div key={idx} className="group relative">
-                          <img src={src} alt={`${period.title} ${idx + 1}`} className="w-full h-20 object-cover rounded-lg border shadow-sm" />
-                          <div className="absolute top-1 right-1 bg-black/70 text-white text-[10px] px-1 rounded">
-                            {String(idx + 1).padStart(2, "0")}
+                {[
+                  {
+                    title: "Baseline Period",
+                    color: "emerald",
+                    images: section1Images,
+                    date: dates.from,
+                    stats: { acq: 12, cloud: "5.2%", pixels: "98.4%", window: "±15d" },
+                  },
+                  {
+                    title: "Comparison Period",
+                    color: "amber",
+                    images: section2Images,
+                    date: dates.to,
+                    stats: { acq: 12, cloud: "7.8%", pixels: "96.7%", window: "±15d" },
+                  },
+                ].map((period, i) => {
+                  const c = colorMap[period.color]; // ✅ Get pre-defined Tailwind classes
+                  return (
+                    <div
+                      key={i}
+                      className="bg-white p-4 rounded-xl shadow-lg border border-gray-200"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-3 h-3 ${c.dot} rounded-full`}></div>
+                          <div>
+                            <h3 className="text-sm font-bold text-slate-800">
+                              {period.title}
+                            </h3>
+                            <p className="text-xs text-slate-600">
+                              {period.date} • Sentinel-2 MSI
+                            </p>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        <div className={`${c.badgeBg} ${c.badgeText} px-2 py-0.5 rounded-full text-xs font-medium`}>
+                          {i === 0 ? "T1" : "T2"}
+                        </div>
+                      </div>
 
-                    {/* Acquisition Stats inline */}
-                    <div className={`bg-${period.color}-50 p-2 rounded-lg border border-${period.color}-200`}>
-                      <p className={`text-[11px] text-${period.color}-700 leading-tight`}>
-                        Acquisitions:{" "}
-                        <span className={`font-mono text-${period.color}-800`}>
-                          {period.stats.acq}
-                        </span>, Cloud Cover:{" "}
-                        <span className={`font-mono text-${period.color}-800`}>
-                          {period.stats.cloud}
-                        </span>, Valid Pixels:{" "}
-                        <span className={`font-mono text-${period.color}-800`}>
-                          {period.stats.pixels}
-                        </span>, Window:{" "}
-                        <span className={`font-mono text-${period.color}-800`}>
-                          {period.stats.window}
-                        </span>
-                      </p>
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        {period.images.map((src, idx) => (
+                          <div key={idx} className="group relative">
+                            <img
+                              src={src}
+                              alt={`${period.title} ${idx + 1}`}
+                              className="w-full h-20 object-cover rounded-lg border shadow-sm"
+                            />
+                            <div className="absolute top-1 right-1 bg-black/70 text-white text-[10px] px-1 rounded">
+                              {String(idx + 1).padStart(2, "0")}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Acquisition Stats */}
+                      <div className={`${c.statsBg} p-2 rounded-lg border ${c.statsBorder}`}>
+                        <p className={`${c.statsText} text-[11px] leading-tight`}>
+                          Acquisitions:{" "}
+                          <span className={`font-mono ${c.statsValue}`}>
+                            {period.stats.acq}
+                          </span>, Cloud Cover:{" "}
+                          <span className={`font-mono ${c.statsValue}`}>
+                            {period.stats.cloud}
+                          </span>, Valid Pixels:{" "}
+                          <span className={`font-mono ${c.statsValue}`}>
+                            {period.stats.pixels}
+                          </span>, Window:{" "}
+                          <span className={`font-mono ${c.statsValue}`}>
+                            {period.stats.window}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Execute */}
@@ -343,14 +391,21 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
             </div>
           )}
 
-
           {/* Analyzing */}
           {currentStep === "analyzing" && (
             <div className="flex items-center justify-center h-[580px]">
               <div className="text-center">
-                <img src="/loading.gif" alt="Loading animation" className="w-72 h-72 mx-auto mb-4 rounded-lg" />
-                <p className="text-lg font-medium text-gray-700 mb-1">{loadingText}</p>
-                <p className="text-sm text-gray-500">Computing NDVI, NDMI, and change matrices...</p>
+                <img
+                  src="/loading.gif"
+                  alt="Loading animation"
+                  className="w-72 h-72 mx-auto mb-4 rounded-lg"
+                />
+                <p className="text-lg font-medium text-gray-700 mb-1">
+                  {loadingText}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Computing NDVI, NDMI, and change matrices...
+                </p>
               </div>
             </div>
           )}
@@ -376,4 +431,3 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
 };
 
 export default SatelliteImagery;
-
