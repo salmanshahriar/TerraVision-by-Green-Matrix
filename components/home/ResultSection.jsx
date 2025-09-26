@@ -63,7 +63,7 @@ const ResultsSection = ({ dates, startYear, endYear, timelineData, coverageStart
             </div>
           </div>
           <p className="text-gray-700 text-xs leading-relaxed">
-            Analysis of Chittagong, Bangladesh from {dates.from} to {dates.to} reveals significant deforestation primarily driven by agricultural expansion, urbanization, and illegal logging. Forest coverage decreased from 31% to 24% (a 22.6% loss), NDVI average declined from 0.65 to 0.5, urban coverage increased from 30% to 35% (+16.7%), and barren land expanded from 21% to 25% (+19.0%). This contributes to habitat loss, soil erosion, and increased vulnerability to natural disasters.
+            Analysis of this area from {dates.from} to {dates.to} reveals significant deforestation primarily driven by agricultural expansion, urbanization, and illegal logging. Forest coverage decreased from 31% to 24% (a 22.6% loss), NDVI average declined from 0.65 to 0.5, urban coverage increased from 30% to 35% (+16.7%), and barren land expanded from 21% to 25% (+19.0%). This contributes to habitat loss, soil erosion, and increased vulnerability to natural disasters.
           </p>
         </div>
       </div>

@@ -147,8 +147,8 @@ const LocationSearch = ({ onLocationFound }) => {
   };
 
   return (
-    <div className="p-4">
-      <div className="">
+    <div className="p-3 ">
+      <div className="pb-3">
         <label className="block text-sm font-semibold text-gray-800 mb-2.5">Search Area:</label>
         <div className="relative">
           <input
@@ -289,7 +289,7 @@ const MapControls = ({ onLocationFound }) => {
 
 const LayersSelector = ({ mapType, setMapType }) => {
   return (
-    <div className="absolute top-6 right-6 z-[1000] flex flex-col space-y-2 pt-14">
+    <div className="absolute top-6 right-6 z-[1000] flex flex-col space-y-2 pt-16">
       <div className="bg-white backdrop-blur-md shadow-xl rounded-lg border border-gray-200/50">
         <div className="p-2">
         
@@ -471,8 +471,8 @@ const LayersControl = ({ mapType, setMapType }) => {
 };
 
 const DateRangeSelector = ({ dateRange, setDateRange }) => (
-  <div className="px-4 pb-4">
-    <h3 className="text-sm font-semibold text-gray-800 mb-3">Date Range:</h3>
+  <div className="px-3 pb-4">
+    <h3 className="text-sm font-semibold text-gray-800 mb-2">Date Range:</h3>
     <div className="grid grid-cols- gap-3">
       <div>
         <label className="block text-xs font-medium mb-2">From</label>
@@ -497,9 +497,9 @@ const DateRangeSelector = ({ dateRange, setDateRange }) => (
 );
 
 const AreaSelector = ({ startDrawing, clearDrawings }) => (
-  <div className="px-4 pb-4">
-    <h3 className="text-sm font-semibold text-gray-800 mb-3">Area Selection:</h3>
-    <div className="space-y-3">
+  <div className="px-3 pb-3">
+    <h3 className="text-sm font-semibold text-gray-800 mb-2">Area Selection:</h3>
+    <div className="space-y-2">
       <button
         onClick={() => typeof startDrawing === "function" ? startDrawing() : null}
         className="w-full bg-blue-600 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200  hover:shadow-lg flex items-center justify-center space-x-2 group"
@@ -510,7 +510,7 @@ const AreaSelector = ({ startDrawing, clearDrawings }) => (
       </button>
       <button
         onClick={() => typeof clearDrawings === "function" ? clearDrawings() : null}
-        className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200 hover:shadow-lg flex items-center justify-center space-x-2 group"
+        className="w-full bg-red-500 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200 hover:shadow-lg flex items-center justify-center space-x-2 group"
         aria-label="Clear drawn area"
       >
         <svg className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -585,7 +585,7 @@ const GreenishMap = () => {
         <LayersSelector mapType={mapType} setMapType={setMapType} />
       </MapContainer>
       
-      <div className="absolute top-6 left-6 max-w-sm mt-14 shadow-lg">
+      <div className="absolute top-6 left-6 max-w-sm mt-16 shadow-lg">
         <div className="bg-white shadow-inner shadow-inner rounded-xl border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 overflow-hidden">
           <LocationSearch onLocationFound={handleLocationFound} />
           <div className="">

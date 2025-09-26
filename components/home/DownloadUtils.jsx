@@ -1,7 +1,7 @@
 export const downloadJSONData = ({ dates, startYear, endYear, timelineData, coverageStartData, coverageEndData, classData, changeSummary }) => {
   const analysisData = {
     metadata: {
-      title: "Deforestation Analysis - Chittagong, Bangladesh",
+      title: "Deforestation Analysis",
       analysisDate: new Date().toISOString(),
       period: {
         from: dates.from,
@@ -28,7 +28,7 @@ export const downloadJSONData = ({ dates, startYear, endYear, timelineData, cove
     timelineData: timelineData,
     classData: classData,
     changeSummary: changeSummary,
-    summary: `Analysis of Chittagong, Bangladesh from ${startYear} to ${endYear} reveals significant deforestation primarily driven by agricultural expansion, urbanization, and illegal logging. Forest coverage decreased from ${changeSummary.find(row => row.metric === 'Forest Coverage')?.[`value${startYear}`] || '31%'} to ${changeSummary.find(row => row.metric === 'Forest Coverage')?.[`value${endYear}`] || '24%'} (a ${changeSummary.find(row => row.metric === 'Forest Coverage')?.change || '22.6%'} loss), NDVI average declined from ${changeSummary.find(row => row.metric === 'NDVI Average')?.[`value${startYear}`] || '0.65'} to ${changeSummary.find(row => row.metric === 'NDVI Average')?.[`value${endYear}`] || '0.5'}, urban coverage increased from ${changeSummary.find(row => row.metric === 'Urban Coverage')?.[`value${startYear}`] || '30%'} to ${changeSummary.find(row => row.metric === 'Urban Coverage')?.[`value${endYear}`] || '35%'} (${changeSummary.find(row => row.metric === 'Urban Coverage')?.change || '+16.7%'}), and barren land expanded from ${changeSummary.find(row => row.metric === 'Barren Land')?.[`value${startYear}`] || '21%'} to ${changeSummary.find(row => row.metric === 'Barren Land')?.[`value${endYear}`] || '25%'} (${changeSummary.find(row => row.metric === 'Barren Land')?.change || '+19.0%'}). This contributes to habitat loss, soil erosion, and increased vulnerability to natural disasters.`,
+    summary: `Analysis of this area from ${startYear} to ${endYear} reveals significant deforestation primarily driven by agricultural expansion, urbanization, and illegal logging. Forest coverage decreased from ${changeSummary.find(row => row.metric === 'Forest Coverage')?.[`value${startYear}`] || '31%'} to ${changeSummary.find(row => row.metric === 'Forest Coverage')?.[`value${endYear}`] || '24%'} (a ${changeSummary.find(row => row.metric === 'Forest Coverage')?.change || '22.6%'} loss), NDVI average declined from ${changeSummary.find(row => row.metric === 'NDVI Average')?.[`value${startYear}`] || '0.65'} to ${changeSummary.find(row => row.metric === 'NDVI Average')?.[`value${endYear}`] || '0.5'}, urban coverage increased from ${changeSummary.find(row => row.metric === 'Urban Coverage')?.[`value${startYear}`] || '30%'} to ${changeSummary.find(row => row.metric === 'Urban Coverage')?.[`value${endYear}`] || '35%'} (${changeSummary.find(row => row.metric === 'Urban Coverage')?.change || '+16.7%'}), and barren land expanded from ${changeSummary.find(row => row.metric === 'Barren Land')?.[`value${startYear}`] || '21%'} to ${changeSummary.find(row => row.metric === 'Barren Land')?.[`value${endYear}`] || '25%'} (${changeSummary.find(row => row.metric === 'Barren Land')?.change || '+19.0%'}). This contributes to habitat loss, soil erosion, and increased vulnerability to natural disasters.`,
     environmentalImpact: {
       criticalImpacts: [
         "Habitat fragmentation affecting 15+ endemic species",

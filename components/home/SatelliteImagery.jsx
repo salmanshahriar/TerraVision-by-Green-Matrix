@@ -323,12 +323,10 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
               <div className="text-center max-w-md">
 
                  {/* Area Information Card */}
-                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-lg border border-blue-200">
-                  <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                    </svg>
-                    Selected Area Details
+                <div className="bg-wh backdrop-blur-sm rounded-xl p-6 mb-6 shadow-md border border-blue-200">
+                  <h3 className="text-sm font-bold text-gray-800 mb-6 flex items-center justify-center gap-2">
+                  
+                    Selected Area Details:
                   </h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="text-left">
@@ -482,7 +480,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
               <div className="flex justify-center pt-2">
                 <button
                   onClick={handleCompareData}
-                  className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg text-sm shadow hover:shadow-md transition"
+                  className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-sm shadow-md hover:shadow-md transition"
                 >
                   Execute Multi-Temporal Analysis
                 </button>
