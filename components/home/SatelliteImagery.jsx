@@ -31,7 +31,71 @@ const colorMap = {
   },
 };
 
-const SatelliteImagery = ({ open, setOpen, dateRange }) => {
+const calculateAreaMetrics = (drawnLayer) => {
+  if (!drawnLayer || !drawnLayer.getLatLngs) {
+    return {
+      area: "532.47 km²",
+      perimeter: "110.16 km",
+      centerPoint: "22.3384, 91.7948"
+    };
+  }
+
+  try {
+    const latlngs = drawnLayer.getLatLngs()[0]; 
+    
+    if (!latlngs || latlngs.length < 3) {
+      return {
+        area: "532.47 km²",
+        perimeter: "110.16 km",
+        centerPoint: "22.3384, 91.7948"
+      };
+    }
+
+    let area = 0;
+    let perimeter = 0;
+    
+    const toRad = (deg) => deg * (Math.PI / 180);
+    const earthRadius = 6371000; 
+
+    for (let i = 0; i < latlngs.length; i++) {
+      const j = (i + 1) % latlngs.length;
+      const lat1 = toRad(latlngs[i].lat);
+      const lng1 = toRad(latlngs[i].lng);
+      const lat2 = toRad(latlngs[j].lat);
+      const lng2 = toRad(latlngs[j].lng);
+      
+      area += (lng2 - lng1) * (2 + Math.sin(lat1) + Math.sin(lat2));
+      
+      const dLat = lat2 - lat1;
+      const dLng = lng2 - lng1;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      perimeter += earthRadius * c;
+    }
+    
+    area = Math.abs(area * earthRadius * earthRadius / 2);
+    
+    const centerLat = latlngs.reduce((sum, point) => sum + point.lat, 0) / latlngs.length;
+    const centerLng = latlngs.reduce((sum, point) => sum + point.lng, 0) / latlngs.length;
+
+    return {
+      area: `${(area / 1000000).toFixed(2)} km²`, // Convert to km²
+      perimeter: `${(perimeter / 1000).toFixed(2)} km`, // Convert to km
+      centerPoint: `${centerLat.toFixed(4)}, ${centerLng.toFixed(4)}`
+    };
+  } catch (error) {
+    console.error('Error calculating area metrics:', error);
+    return {
+      area: "532.47 km²",
+      perimeter: "110.16 km", 
+      centerPoint: "22.3384, 91.7948"
+    };
+  }
+};
+
+const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
   const [currentStep, setCurrentStep] = useState("loading");
   const [loadingText, setLoadingText] = useState(
     "Accessing Google Earth Engine API..."
@@ -180,11 +244,13 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
 
   const changeSummary = getChangeSummary();
 
+  const areaMetrics = calculateAreaMetrics(drawnLayer);
+
   useEffect(() => {
     if (open && currentStep === "loading") {
       const timer = setTimeout(() => {
         setCurrentStep("images");
-      }, 3500);
+      }, 6000);
       return () => clearTimeout(timer);
     }
   }, [open, currentStep]);
@@ -196,7 +262,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
     );
     setTimeout(() => {
       setCurrentStep("results");
-    }, 4000);
+    }, 6000);
   };
 
   const handleClose = () => {
@@ -237,7 +303,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-full max-w-7xl overflow-y-auto mx-auto gap-0 p-0 bg-white rounded-xl shadow-xl border">
+      <DialogContent className="w-full max-w-7xl  overflow-y-auto mx-auto gap-0 p-0 bg-white shadow-xl rounded-xl border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 ">
         {/* Header */}
         <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 rounded-t-xl">
           <DialogHeader>
@@ -253,9 +319,42 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
         {/* Content */}
         <div className="p-4 bg-gray-50/50 backdrop-blur-sm">
           {currentStep === "loading" && (
-            <div className="flex items-center justify-center h-[580px]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+            <div className="flex flex-col items-center justify-center h-[580px]">
+              <div className="text-center max-w-md">
+
+                 {/* Area Information Card */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-lg border border-blue-200">
+                  <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    Selected Area Details
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="text-left">
+                      <span className="text-gray-600 block">Area:</span>
+                      <span className="font-mono text-blue-800 font-semibold">{areaMetrics.area}</span>
+                    </div>
+                    <div className="text-left">
+                      <span className="text-gray-600 block">Perimeter:</span>
+                      <span className="font-mono text-blue-800 font-semibold">{areaMetrics.perimeter}</span>
+                    </div>
+                    <div className="text-left col-span-2">
+                      <span className="text-gray-600 block">Center Point:</span>
+                      <span className="font-mono text-blue-800 font-semibold">{areaMetrics.centerPoint}</span>
+                    </div>
+                    <div className="text-left col-span-2">
+                      <span className="text-gray-600 block">Date Range:</span>
+                      <span className="font-mono text-blue-800 font-semibold">
+                        {dateRange?.from || '2023-01-01'} to {dateRange?.to || '2024-12-31'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mx-auto mb-6"></div>
+                
+               
+
                 <p className="text-lg font-medium text-gray-700 mb-2">
                   {loadingText}
                 </p>
@@ -318,7 +417,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange }) => {
                     stats: { acq: 12, cloud: "7.8%", pixels: "96.7%", window: "±15d" },
                   },
                 ].map((period, i) => {
-                  const c = colorMap[period.color]; // ✅ Get pre-defined Tailwind classes
+                  const c = colorMap[period.color];
                   return (
                     <div
                       key={i}

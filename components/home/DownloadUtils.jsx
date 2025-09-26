@@ -270,7 +270,6 @@ export const downloadPDF = ({ dates, startYear, endYear, timelineData, changeSum
         <div class="page-container">
           <div class="report-header">
             <div class="report-title">Deforestation Analysis Report</div>
-            <div class="report-subtitle">Chittagong Division, Bangladesh</div>
             <div class="report-subtitle">Analysis Period: ${dates.from} to ${dates.to}</div>
             <div class="report-meta">Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | Satellite Remote Sensing Analysis</div>
           </div>

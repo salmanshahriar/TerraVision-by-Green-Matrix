@@ -3,7 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, R
 import { Download, FileText } from 'lucide-react';
 import { downloadJSONData, downloadPDF } from './DownloadUtils';
 
-// Custom label component for percentage values
 const PercentageLabel = (props) => {
   const { x, y, width, height, value } = props;
   return (
@@ -20,7 +19,6 @@ const PercentageLabel = (props) => {
   );
 };
 
-// Custom label component for sample counts
 const SampleCountLabel = (props) => {
   const { x, y, width, height, value } = props;
   return (

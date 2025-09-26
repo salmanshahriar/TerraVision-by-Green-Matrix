@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import { Plus, Minus, Locate, Navigation, Layers, Map, LassoSelect} from 'lucide-react';
+import { Plus, Minus, Locate, Navigation, Layers, Map, LassoSelect } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
@@ -24,37 +24,42 @@ const DrawControl = ({ setOpen, setDrawnLayer, onDrawControlReady }) => {
   useEffect(() => {
     if (!map) return;
 
-    const drawnItems = drawnItemsRef.current;
-    map.addLayer(drawnItems);
+    const initializeDrawControl = () => {
+      const drawnItems = drawnItemsRef.current;
+      map.addLayer(drawnItems);
 
-    const drawControl = new L.Control.Draw({
-      edit: { featureGroup: drawnItems },
-      draw: { polygon: true, polyline: false, rectangle: false, circle: false, marker: false },
-    });
-    drawControlRef.current = drawControl;
+      const drawControl = new L.Control.Draw({
+        edit: { featureGroup: drawnItems },
+        draw: { polygon: true, polyline: false, rectangle: false, circle: false, marker: false },
+      });
+      drawControlRef.current = drawControl;
 
-    map.on(L.Draw.Event.CREATED, (e) => {
-      const { layer } = e;
-      drawnItems.clearLayers();
-      drawnItems.addLayer(layer);
-      setDrawnLayer(layer);
-      setOpen(true);
-      layer.on("click", () => setOpen(true));
-    });
+      map.on(L.Draw.Event.CREATED, (e) => {
+        const { layer } = e;
+        drawnItems.clearLayers();
+        drawnItems.addLayer(layer);
+        setDrawnLayer(layer);
+        setOpen(true);
+        layer.on("click", () => setOpen(true));
+      });
 
-    map.invalidateSize();
+      map.invalidateSize();
 
-    onDrawControlReady({
-      startDrawing: () => drawControlRef.current && new L.Draw.Polygon(map, drawControlRef.current.options.draw.polygon).enable(),
-      clearDrawings: () => {
-        drawnItemsRef.current.clearLayers();
-        setDrawnLayer(null);
-      },
-    });
+      onDrawControlReady({
+        startDrawing: () => drawControlRef.current && new L.Draw.Polygon(map, drawControlRef.current.options.draw.polygon).enable(),
+        clearDrawings: () => {
+          drawnItemsRef.current.clearLayers();
+          setDrawnLayer(null);
+        },
+      });
+    };
+
+    const timeout = setTimeout(initializeDrawControl, 0);
 
     return () => {
+      clearTimeout(timeout);
       map.off(L.Draw.Event.CREATED);
-      map.removeLayer(drawnItems);
+      map.removeLayer(drawnItemsRef.current);
     };
   }, [map, setOpen, setDrawnLayer, onDrawControlReady]);
 
@@ -142,11 +147,10 @@ const LocationSearch = ({ onLocationFound }) => {
   };
 
   return (
-    <div className="bg-white shadow-xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-20 transition-all duration-200 hover:shadow-2xl hover:scale-[1.02]">
-      <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-      <div className="relative z-10">
-        <label className="block text-sm font-semibold text-black mb-2">Search Area:</label>
-        <div className="relative z-20">
+    <div className="p-4">
+      <div className="">
+        <label className="block text-sm font-semibold text-gray-800 mb-2.5">Search Area:</label>
+        <div className="relative">
           <input
             type="text"
             value={searchQuery}
@@ -157,14 +161,14 @@ const LocationSearch = ({ onLocationFound }) => {
             }}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            placeholder="Search for a place"
-            className="w-full placeholder-black border border-black/30 shadow-xs rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 bg-white/50 backdrop-blur-sm transition-all duration-200"
+            placeholder="Search for a place..."
+            className="w-full placeholder-gray-500 border border-2 border-black/30 shadow-inner rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white/95 backdrop-blur-sm transition-all duration-200 hover:border-gray-400"
             aria-label="Search for a location"
           />
           <button
             onClick={searchLocation}
             disabled={isSearching || !searchQuery.trim()}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black transition-colors duration-200 disabled:opacity-50"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-blue-600 transition-colors duration-200 disabled:opacity-50"
             title="Search location"
             aria-label="Search location"
           >
@@ -178,14 +182,14 @@ const LocationSearch = ({ onLocationFound }) => {
               </svg>
             )}
           </button>
+          
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 bg-white/90 backdrop-blur-sm border-t-2 border-l-2 border-white border-r border-b border-r-gray-200/80 border-b-gray-200/80 rounded-lg shadow-xl max-h-64 overflow-y-auto mt-1.5 z-50 transition-all duration-200">
-              <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
+            <div className="absolute top-full left-0 right-0 bg-white/96 backdrop-blur-md border border-gray-200 rounded-lg shadow-xl max-h-64 overflow-y-auto mt-2 z-50 transition-all duration-200">
               {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => selectLocation(suggestion)}
-                  className="relative w-full text-left px-4 py-2.5 hover:bg-blue-50/80 text-sm border-b border-gray-100/50 last:border-b-0 focus:outline-none focus:bg-blue-50/80 transition-all duration-150 rounded-lg"
+                  className="w-full text-left px-4 py-3 hover:bg-blue-50/80 text-sm border-b border-gray-100/50 last:border-b-0 focus:outline-none focus:bg-blue-50/80 transition-all duration-150 first:rounded-t-lg last:rounded-b-lg"
                   aria-label={`Select ${suggestion.place_name}`}
                 >
                   <div className="font-medium text-gray-800 truncate">{suggestion.place_name}</div>
@@ -200,10 +204,14 @@ const LocationSearch = ({ onLocationFound }) => {
   );
 };
 
-const ZoomControls = ({ onLocationFound, mapType, setMapType }) => {
+const MapControls = ({ onLocationFound }) => {
   const map = useMap();
   const [isLocating, setIsLocating] = useState(false);
   const markerRef = useRef(null);
+
+  if (!map) {
+    return null;
+  }
 
   const handleZoomIn = () => map.zoomIn();
   const handleZoomOut = () => map.zoomOut();
@@ -242,75 +250,80 @@ const ZoomControls = ({ onLocationFound, mapType, setMapType }) => {
   };
 
   return (
-    <div className="absolute top-6 right-6 z-[1000] flex flex-col space-y-2 pt-10">
-      <div className="bg-white shadow-lg rounded-lg border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative">
-        <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
-        <div className="relative z-10 p-3">
-          <h3 className="text-sm font-semibold text-black mb-2">Map Layers:</h3>
-          <div className="space-y-0.5">
+    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-[1000]">
+      <div className="bg-white/98 backdrop-blur-md shadow-xl rounded-xl border border-gray-200/50">
+        <div className="flex items-center ">
+          <button
+            onClick={handleZoomIn}
+            className="p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+            title="Zoom In"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+          <div className="w-px h-8 bg-gray-200 mx-1" />
+          <button
+            onClick={handleZoomOut}
+            className="p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+            title="Zoom Out"
+          >
+            <Minus className="w-5 h-5" />
+          </button>
+          <div className="w-px h-8 bg-gray-200 mx-1" />
+          <button
+            onClick={locateMe}
+            disabled={isLocating}
+            className="p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 disabled:opacity-50"
+            title="Locate Me"
+          >
+            {isLocating ? (
+              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Locate className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LayersSelector = ({ mapType, setMapType }) => {
+  return (
+    <div className="absolute top-6 right-6 z-[1000] flex flex-col space-y-2 pt-14">
+      <div className="bg-white backdrop-blur-md shadow-xl rounded-lg border border-gray-200/50">
+        <div className="p-2">
+        
+          <div className="">
             {[
-              { 
-                value: "satellite", 
-                label: "Satellite", 
-                icon: <Layers className="w-3.5 h-3.5" />
+              {
+                value: "satellite",
+                label: "Satellite view",
+                icon: <Layers className="w-4 h-4" />,
               },
-              { 
-                value: "satellite+names+roads", 
-                label: "Terrain", 
-                icon: <Map className="w-3.5 h-3.5" />
+              {
+                value: "satellite+names+roads",
+                label: "Hybrid view",
+                icon: <Map className="w-4 h-4" />,
               },
-              { 
-                value: "roads", 
-                label: "Street", 
-                icon: <Navigation className="w-3.5 h-3.5" />
-              }
+              {
+                value: "roads",
+                label: "Streets view",
+                icon: <Navigation className="w-4 h-4" />,
+              },
             ].map((type) => (
               <button
                 key={type.value}
                 onClick={() => setMapType(type.value)}
-                className={`w-full flex items-center space-x-2 p-2 rounded-md transition-all duration-200 text-left ${
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 text-left ${
                   mapType === type.value 
-                    ? "bg-black text-white" 
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-blue-600 text-white shadow-md" 
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
-                <div className="flex items-center space-x-2">
-                  <div className={`${mapType === type.value ? "text-white" : "text-gray-500"}`}>
-                    {type.icon}
-                  </div>
-                  <span className="font-medium text-xs">{type.label}</span>
-                </div>
+                <div className="flex-shrink-0">{type.icon}</div>
+                <span className="font-medium text-sm">{type.label}</span>
               </button>
             ))}
-          </div>
-        </div>
-      </div>
-      <div className="bg-white shadow-lg rounded-lg border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative">
-        <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
-        <div className="relative z-10 p-2">
-          <div className="flex space-x-0.5">
-            <button
-              onClick={handleZoomIn}
-              className="flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200"
-              title="Zoom In"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleZoomOut}
-              className="flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200"
-              title="Zoom Out"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <button
-              onClick={locateMe}
-              disabled={isLocating}
-              className="flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200 disabled:opacity-60"
-              title="Locate Me"
-            >
-              <Locate className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </div>
@@ -321,41 +334,51 @@ const ZoomControls = ({ onLocationFound, mapType, setMapType }) => {
 const LayersControl = ({ mapType, setMapType }) => {
   const [showLayers, setShowLayers] = useState(false);
   const mapTypes = [
-    { 
-      value: "satellite+names+roads", 
-      label: "Hybrid", 
+    {
+      value: "satellite+names+roads",
+      label: "Hybrid",
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/>
-          <path d="M9 3v18"/>
-          <path d="M15 3v18"/>
-          <circle cx="6" cy="12" r="1"/>
-          <circle cx="12" cy="9" r="1"/>
-          <circle cx="18" cy="15" r="1"/>
-          <path d="M18 6a6 6 0 0 0-12 0"/>
+          <path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z" />
+          <path d="M9 3v18" />
+          <path d="M15 3v18" />
+          <circle cx="6" cy="12" r="1" />
+          <circle cx="12" cy="9" r="1" />
+          <circle cx="18" cy="15" r="1" />
+          <path d="M18 6a6 6 0 0 0-12 0" />
         </svg>
       ),
-      description: "Satellite with labels"
+      description: "Satellite with labels",
     },
-    { 
-      value: "roads", 
-      label: "Roads", 
+    {
+      value: "roads",
+      label: "Streets",
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+          />
         </svg>
       ),
-      description: "Street view with roads"
+      description: "Street view with roads",
     },
-    { 
-      value: "satellite", 
-      label: "Satellite", 
+    {
+      value: "satellite",
+      label: "Satellite",
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+          />
         </svg>
       ),
-      description: "Pure satellite imagery"
+      description: "Pure satellite imagery",
     },
   ];
 
@@ -363,22 +386,34 @@ const LayersControl = ({ mapType, setMapType }) => {
     <div className="relative">
       <button
         onClick={() => setShowLayers(!showLayers)}
-        className={`bg-white shadow-2xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 hover:bg-white hover:shadow-3xl transition-all duration-300 group relative ${showLayers ? 'bg-blue-50/90 border-t-blue-200 border-l-blue-200' : ''}`}
+        className={`bg-white/98 backdrop-blur-md shadow-xl rounded-xl p-4 border border-gray-200/50 hover:shadow-2xl transition-all duration-300 group ${
+          showLayers ? "bg-blue-50/90 border-blue-200/50" : ""
+        }`}
         title="Map Layers"
       >
-        <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-        <div className="relative z-10 flex items-center space-x-2">
-          <svg className={`w-4 h-4 transition-colors duration-300 relative z-10 ${showLayers ? 'text-blue-600' : 'text-gray-700 group-hover:text-blue-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        <div className="flex items-center space-x-2">
+          <svg
+            className={`w-4 h-4 transition-colors duration-300 ${
+              showLayers ? "text-blue-600" : "text-gray-700 group-hover:text-blue-600"
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+            />
           </svg>
         </div>
       </button>
-      
+
       {showLayers && (
-        <div className="absolute top-0 right-full bg-white shadow-2xl rounded-2xl border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 overflow-hidden min-w-[300px] z-[2000] mr-4 animate-in slide-in-from-right-2 duration-200">
-          <div className="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
-          <div className="p-3 relative z-10">
-            <div className="flex items-center justify-between px-3 py-3 border-b-2 border-gray-100/80 mb-2">
+        <div className="absolute top-0 right-full bg-white/98 backdrop-blur-md shadow-2xl rounded-2xl border border-gray-200/50 overflow-hidden min-w-[320px] z-[2000] mr-4 animate-in slide-in-from-right-2 duration-200">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
               <h3 className="font-bold text-gray-800 text-sm">Map Layers</h3>
               <button
                 onClick={() => setShowLayers(false)}
@@ -397,31 +432,33 @@ const LayersControl = ({ mapType, setMapType }) => {
                     setMapType(type.value);
                     setShowLayers(false);
                   }}
-                  className={`w-full text-left transition-all duration-200 rounded-xl p-3 relative group ${
-                    mapType === type.value 
-                      ? "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 font-medium border-t-2 border-l-2 border-blue-300 border-r border-b border-r-blue-200/60 border-b-blue-200/60 shadow-inner" 
-                      : "text-gray-700 hover:bg-gray-50/80 border-t-2 border-l-2 border-white/60 border-r border-b border-r-gray-200/40 border-b-gray-200/40 hover:shadow-inner hover:border-t-gray-100 hover:border-l-gray-100"
+                  className={`w-full text-left transition-all duration-200 rounded-xl p-3 group ${
+                    mapType === type.value
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200"
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-lg ${
-                      mapType === type.value 
-                        ? "bg-blue-200/50 text-blue-600" 
-                        : "bg-gray-100/50 text-gray-500 group-hover:bg-gray-200/50 group-hover:text-gray-600"
-                    }`}>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        mapType === type.value
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-100 text-gray-500 group-hover:bg-gray-200 group-hover:text-gray-600"
+                      }`}
+                    >
                       {type.icon}
                     </div>
                     <div className="flex-1">
                       <div className="font-medium text-sm">{type.label}</div>
-                      <div className={`text-xs mt-1 ${
-                        mapType === type.value ? "text-blue-600/80" : "text-gray-500 group-hover:text-gray-600"
-                      }`}>
+                      <div
+                        className={`text-xs mt-1 ${
+                          mapType === type.value ? "text-blue-100" : "text-gray-500 group-hover:text-gray-600"
+                        }`}
+                      >
                         {type.description}
                       </div>
                     </div>
-                    {mapType === type.value && (
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    )}
+                    {mapType === type.value && <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"></div>}
                   </div>
                 </button>
               ))}
@@ -434,68 +471,59 @@ const LayersControl = ({ mapType, setMapType }) => {
 };
 
 const DateRangeSelector = ({ dateRange, setDateRange }) => (
-  <div className="bg-white shadow-xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10 transition-all duration-200 hover:shadow-2xl hover:scale-[1.02]">
-    <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-    <div className="relative z-10">
-      <h3 className="text-sm font-semibold text-black mb-3">Date Range:</h3>
-      <div className="space-y-3">
-        <div>
-          <label className="block text-xs font-medium text-black mb-1">From</label>
-          <input
-            type="date"
-            value={dateRange.from}
-            onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
-            className="w-full border border-black/30 shadow-xs rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 bg-white/50 backdrop-blur-sm transition-all duration-200 "
-            aria-label="Select start date"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-black mb-1">To</label>
-          <input
-            type="date"
-            value={dateRange.to}
-            onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
-            className="w-full border  border-black/30 shadow-xs rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 bg-white/50 backdrop-blur-sm transition-all duration-200"
-            aria-label="Select end date"
-          />
-        </div>
+  <div className="px-4 pb-4">
+    <h3 className="text-sm font-semibold text-gray-800 mb-3">Date Range:</h3>
+    <div className="grid grid-cols- gap-3">
+      <div>
+        <label className="block text-xs font-medium mb-2">From</label>
+        <input
+          type="date"
+          value={dateRange.from}
+          onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
+          className="w-full px-3 py-2.5 text-sm bg-white/95 border border-2 border-black/30 shadow-inner  rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 hover:border-gray-400"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium mb-2">To</label>
+        <input
+          type="date"
+          value={dateRange.to}
+          onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
+          className="w-full px-3 py-2.5 text-sm bg-white/95 border border-2 border-black/30 shadow-inner rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 hover:border-gray-400"
+        />
       </div>
     </div>
   </div>
 );
 
 const AreaSelector = ({ startDrawing, clearDrawings }) => (
-  <div className="bg-white shadow-xl rounded-xl p-4 border-t-4 border-l-4 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 relative z-10 transition-all duration-200 hover:shadow-2xl hover:scale-[1.02]">
-    <div className="absolute inset-0 rounded-xl shadow-inner pointer-events-none"></div>
-    <div className="relative z-10">
-      <h3 className="text-sm font-semibold text-black mb-3">Area Selection:</h3>
-      <div className="space-y-2">
-        <button
-          onClick={startDrawing}
-          className="w-full bg-black text-white font-medium py-2 px-4 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2 relative group"
-          aria-label="Start drawing area"
-        >
-          <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
-          <LassoSelect className="w-3.5 h-3.5" />
-          <span className="relative z-10">Select Area</span>
-        </button>
-        <button
-          onClick={clearDrawings}
-          className="w-full bg-red-500 text-white font-medium py-2 px-4 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2 relative group"
-          aria-label="Clear drawn area"
-        >
-          <div className="absolute inset-0 rounded-lg shadow-inner pointer-events-none"></div>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          <span className="relative z-10">Clear</span>
-        </button>
-      </div>
+  <div className="px-4 pb-4">
+    <h3 className="text-sm font-semibold text-gray-800 mb-3">Area Selection:</h3>
+    <div className="space-y-3">
+      <button
+        onClick={() => typeof startDrawing === "function" ? startDrawing() : null}
+        className="w-full bg-blue-600 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200  hover:shadow-lg flex items-center justify-center space-x-2 group"
+        aria-label="Start drawing area"
+      >
+        <LassoSelect className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+        <span>Select Area</span>
+      </button>
+      <button
+        onClick={() => typeof clearDrawings === "function" ? clearDrawings() : null}
+        className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200 hover:shadow-lg flex items-center justify-center space-x-2 group"
+        aria-label="Clear drawn area"
+      >
+        <svg className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        <span>Clear Area</span>
+      </button>
     </div>
   </div>
 );
 
 const GreenishMap = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [mapType, setMapType] = useState("satellite+names+roads");
   const [dateRange, setDateRange] = useState({ from: "2020-01-01", to: "2025-08-01" });
@@ -503,12 +531,20 @@ const GreenishMap = () => {
   const [drawControl, setDrawControl] = useState({ startDrawing: () => {}, clearDrawings: () => {} });
   const [mapRef, setMapRef] = useState(null);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const handleLocationFound = (coordinates, displayName) => {
     mapRef?.setView(coordinates, 15);
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative h-screen w-full bg-gray-50">
       <MapContainer
         center={[23.8103, 90.4125]}
         zoom={7}
@@ -545,14 +581,29 @@ const GreenishMap = () => {
           </>
         )}
         <DrawControl setOpen={setOpen} setDrawnLayer={setDrawnLayer} onDrawControlReady={setDrawControl} />
-        <ZoomControls onLocationFound={handleLocationFound} mapType={mapType} setMapType={setMapType} />
+        <MapControls onLocationFound={handleLocationFound} />
+        <LayersSelector mapType={mapType} setMapType={setMapType} />
       </MapContainer>
-      <div className="absolute top-6 left-6 space-y-4 max-w-xs pt-10">
-        <LocationSearch onLocationFound={handleLocationFound} />
-        <DateRangeSelector dateRange={dateRange} setDateRange={setDateRange} />
-        <AreaSelector startDrawing={drawControl.startDrawing} clearDrawings={drawControl.clearDrawings} />
+      
+      <div className="absolute top-6 left-6 max-w-sm mt-14 shadow-lg">
+        <div className="bg-white shadow-inner shadow-inner rounded-xl border-t-2 border-l-2 border-white border-r border-b border-r-gray-300/60 border-b-gray-300/60 overflow-hidden">
+          <LocationSearch onLocationFound={handleLocationFound} />
+          <div className="">
+            <DateRangeSelector dateRange={dateRange} setDateRange={setDateRange} />
+          </div>
+          <div className="">
+            <AreaSelector startDrawing={drawControl.startDrawing} clearDrawings={drawControl.clearDrawings} />
+          </div>
+        </div>
       </div>
-      <SatelliteImagery open={open} setOpen={setOpen} activeLayer={mapType} dateRange={dateRange} />
+      
+      <SatelliteImagery 
+        open={open} 
+        setOpen={setOpen} 
+        activeLayer={mapType} 
+        dateRange={dateRange} 
+        drawnLayer={drawnLayer}
+      />
     </div>
   );
 };
