@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Deforestation Analysis Tool",
-  description: "Deforestation Analysis Tool - NSAC 2025",
+  title: "TerraVision | By Green Matrix | NSAC2025",
+  description: "Our project is an AI-powered application for monitoring and classifying Land Use and Land Cover (LULC) changes using Sentinel-2 satellite imagery. It tackles urgent global challenges such as unchecked urban growth, deforestation, and land degradation, which threaten biodiversity, food security, and sustainable development.",
 };
 
 export default function RootLayout({
