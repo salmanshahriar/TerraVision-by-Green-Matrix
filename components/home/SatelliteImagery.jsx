@@ -308,7 +308,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
         <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 rounded-t-xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">
-              Deforestation Analysis
+              Comparison Analysis
             </DialogTitle>
             <DialogDescription className="text-blue-100 text-sm mt-1">
               {dates.from} to {dates.to} • Remote Sensing Data
