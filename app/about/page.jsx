@@ -14,14 +14,14 @@ const PDFViewerPage = () => {
           <div className="">
             <h2 className="text-xl font-semibold text-black mb-4"><span className='font-bold'>Challenge Category:</span> Data Pathways to Healthy Cities and Human Settlements</h2>
             
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-3 text-gray-700">
               <p className="text-sm leading-relaxed">
                 <span className="font-semibold text-red-600">We Want To Solve:</span> Unchecked urban growth and land degradation by using satellite imagery and AI to detect critical environmental changes.
 
               </p>
               
               <p className="text-sm leading-relaxed">
-                <span className="font-semibold text-blue-600">Our Solution:</span> We used the EuroSAT dataset with 5,000 Sentinel-2 satellite images to train and validate our model, achieving strong accuracy. Our deep learning approach reached 88.3% accuracy across 10 land cover classes, including forests, urban areas, agricultural fields, and water bodies, and was further validated through confusion matrices and performance metrics. This confirms that our machine learning can reliably detect environmental transitions, making it a powerful tool for monitoring deforestation, desertification, and urban expansion in near real-time.
+                <span className="font-semibold text-blue-600">Our Solution:</span> We used the EuroSAT dataset with 5,000 Sentinel-2 satellite images to train and validate our model, achieving strong accuracy. Our deep learning approach reached 88.3% accuracy across 10 land cover classes, including forests, urban areas, agricultural fields, and water bodies etc. This confirms that our machine learning can reliably detect environmental transitions, making it a powerful tool by comparison users selected area and date ranges to collect satellite images & comparison by our ai for monitoring deforestation, desertification, and urban expansion in near real-time.
               </p>
               
               <p className="text-sm leading-relaxed">
@@ -29,13 +29,22 @@ const PDFViewerPage = () => {
 
               </p>
               
-              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mt-14">
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6 mb-2">
                 <p className="text-sm text-blue-700 italic font-medium text-center">
                   "Because if we don't monitor Earth's pulse today,<br/>
                   There may not be one tomorrow."
                 </p>
                 <p className='text-sm text-blue-700 italic font-medium text-end mt-5'>- Team Green Matrix</p>
               </div>
+
+   
+              <p className="text-sm leading-relaxed">
+                <span className='text-black font-bold'>Source Code (Frontend):</span> <br /> <a href="https://github.com/salmanshahriar/TerraVision-by-Green-Matrix" target='_blank'><u>https://github.com/salmanshahriar/TerraVision-by-Green-Matrix</u></a>
+                <br />
+                <span className='text-black font-bold'>Our Trained Model:</span> <br /> <a href="https://colab.research.google.com/drive/1u2IEjthzloglRrxErd0z_D89JP6V-1Vk"  target='_blank'><u> https://colab.research.google.com/drive/1u2IEjthzloglRrxErd0z_D89JP6V-1Vk</u></a>
+
+              </p>
+              
 
               {/* <div className="bg-gray-50 rounded-lg p-4 mt-6 border border-gray-200">
                 <h3 className="text-sm font-semibold text-gray-800 mb-2">Team Terra Vision</h3>

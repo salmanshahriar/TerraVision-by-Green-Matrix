@@ -502,7 +502,7 @@ const AreaSelector = ({ startDrawing, clearDrawings }) => (
     <div className="space-y-2">
       <button
         onClick={() => typeof startDrawing === "function" ? startDrawing() : null}
-        className="w-full bg-blue-600 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200  hover:shadow-lg flex items-center justify-center space-x-2 group"
+        className="w-full bg-blue-600 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-4 rounded-lg text-sm transition-all duration-200 border border-blue-800 hover:shadow-lg flex items-center justify-center space-x-2 group"
         aria-label="Start drawing area"
       >
         <LassoSelect className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />

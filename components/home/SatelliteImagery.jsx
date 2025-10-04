@@ -102,10 +102,10 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
   );
 
   const section1Images = [
-    "/images/AnnualCrop_1054.jpg",
+    "/images/Highway_1008.jpg",
     "/images/AnnualCrop_1143.jpg",
     "/images/AnnualCrop_1184.jpg",
-    "/images/Forest_1.jpg",
+    "/images/Highway_1.jpg",
     "/images/Forest_1056.jpg",
     "/images/Highway_1061.jpg",
     "/images/River_1008.jpg",
@@ -113,21 +113,21 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
     "/images/HerbaceousVegetation_1044.jpg",
     "/images/HerbaceousVegetation_1090.jpg",
     "/images/AnnualCrop_1054.jpg",
-    "/images/Highway_1061.jpg",
+    "/images/Forest_1019.jpg",
   ];
 
   const section2Images = [
     "/images/Highway_1064.jpg",
-    "/images/Highway_1075.jpg",
-    "/images/River_1008.jpg",
-    "/images/Highway_1061.jpg",
-    "/images/Forest_1056.jpg",
-    "/images/Forest_1135.jpg",
+    "/images/Industrial_1001.jpg",
+    "/images/Highway_1020.jpg",
+    "/images/Residential_1014.jpg",
+    "/images/Forest_101.jpg",
+    "/images/Industrial_1012.jpg",
     "/images/HerbaceousVegetation_1044.jpg",
-    "/images/AnnualCrop_1054.jpg",
-    "/images/Forest_1135.jpg",
+    "/images/Highway_1006.jpg",
+    "/images/Industrial_1023.jpg",
     "/images/HerbaceousVegetation_1044.jpg",
-    "/images/Highway_1061.jpg",
+    "/images/AnnualCrop_1002.jpg",
     "/images/River_1008.jpg",
   ];
 
@@ -374,25 +374,25 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
                   </h3>
                 </div>
                 <div className="grid grid-cols-4 gap-y-1 text-[11px] leading-tight">
-                  <span className="text-slate-600">Dataset:</span>
+                  <span className="text-slate-600 font-bold">Dataset:</span>
                   <span className="text-slate-800 font-mono col-span-1">
                     COPERNICUS/S2_SR
                   </span>
-                  <span className="text-slate-600">Level:</span>
+                  <span className="text-slate-600 font-bold">Level:</span>
                   <span className="text-slate-800">2A (Surface Reflectance)</span>
 
-                  <span className="text-slate-600">Correction:</span>
+                  <span className="text-slate-600 font-bold">Correction:</span>
                   <span className="text-green-600 font-medium">Applied ✓</span>
-                  <span className="text-slate-600">Resolution:</span>
+                  <span className="text-slate-600 font-bold">Resolution:</span>
                   <span className="text-slate-800">10m (RGB)</span>
 
-                  <span className="text-slate-600">Bands:</span>
+                  <span className="text-slate-600 font-bold">Bands:</span>
                   <span className="text-slate-800 font-mono">B4, B3, B2</span>
-                  <span className="text-slate-600">Range:</span>
+                  <span className="text-slate-600 font-bold">Range:</span>
                   <span className="text-slate-800 font-mono">0–3000</span>
-                  <span className="text-slate-600">Gamma:</span>
+                  <span className="text-slate-600 font-bold">Gamma:</span>
                   <span className="text-slate-800 font-mono">1.4</span>
-                  <span className="text-slate-600">Clouds:</span>
+                  <span className="text-slate-600 font-bold">Clouds:</span>
                   <span className="text-green-600 font-medium">10%</span>
                 </div>
               </div>
@@ -455,7 +455,7 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
 
                       {/* Acquisition Stats */}
                       <div className={`${c.statsBg} p-2 rounded-lg border ${c.statsBorder}`}>
-                        <p className={`${c.statsText} text-[11px] leading-tight`}>
+                        <p className={`${c.statsText} text-[11px] leading-tight font-bold`}>
                           Acquisitions:{" "}
                           <span className={`font-mono ${c.statsValue}`}>
                             {period.stats.acq}
@@ -480,9 +480,9 @@ const SatelliteImagery = ({ open, setOpen, dateRange, drawnLayer }) => {
               <div className="flex justify-center pt-2">
                 <button
                   onClick={handleCompareData}
-                  className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-sm shadow-md hover:shadow-md transition"
+                  className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-sm shadow-xl border border-blue-800 hover:shadow-md transition"
                 >
-                  Execute Multi-Temporal Analysis
+                  Execute The Comparison Analysis
                 </button>
               </div>
             </div>
