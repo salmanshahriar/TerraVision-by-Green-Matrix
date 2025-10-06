@@ -29,5 +29,6 @@ By providing **near real-time monitoring**, our system supports governments, NGO
 - 💻 **Source Code**: [GitHub Repository](https://github.com/salmanshahriar/TerraVision-by-Green-Matrix)  
 - 🤖 **Trained Model (Google Colab)**: [Open Here](https://colab.research.google.com/drive/1u2IEjthzloglRrxErd0z_D89JP6V-1Vk)  
 - 📖 **About & Research**: [Learn More](https://terravision.salmanshahriar.com/about)  
+- 📖 **Team Info** [Team Green Matrix - Space Apps Challenge 2025](https://www.spaceappschallenge.org/2025/find-a-team/green-matrix/?tab=project)
 
 ---
